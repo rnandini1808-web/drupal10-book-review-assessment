@@ -9,7 +9,8 @@ use Drupal\Core\Entity\Entity\EntityViewDisplay;
 /**
  * Implements hook_install().
  */
-function book_review_install() {
+function book_review_install()
+{
 
   $created = [];
   $existing = [];
@@ -27,8 +28,7 @@ function book_review_install() {
     ])->save();
 
     $created[] = 'Book Review content type';
-  }
-  else {
+  } else {
     $existing[] = 'Book Review content type';
   }
 
@@ -89,7 +89,6 @@ function book_review_install() {
 
     $created[] = 'Review Body field';
   }
-
   // ---------------------------------------------------------------------------
   // FIELD: STAR RATING
   // ---------------------------------------------------------------------------
@@ -102,8 +101,7 @@ function book_review_install() {
       'type' => 'integer',
       'cardinality' => 1,
       'settings' => [
-        'min' => 0,
-        'max' => 5,
+        'unsigned' => TRUE,
       ],
     ])->save();
 
@@ -118,11 +116,16 @@ function book_review_install() {
       'bundle' => 'book_review',
       'label' => 'Star Rating',
       'required' => TRUE,
+      'settings' => [
+        'min' => 0,
+        'max' => 5,
+        'prefix' => '',
+        'suffix' => '',
+      ],
     ])->save();
 
     $created[] = 'Star Rating field';
   }
-
   // ---------------------------------------------------------------------------
   // FIELD: BOOK COVER IMAGE
   // ---------------------------------------------------------------------------
@@ -257,5 +260,4 @@ function book_review_install() {
       'Already existed: ' . implode(', ', $existing)
     );
   }
-
 }
