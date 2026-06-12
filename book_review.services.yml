@@ -1,0 +1,6 @@
+services:
+  book_review.review_service:
+    class: Drupal\book_review\Service\BookReviewService
+    arguments:
+      - '@entity_type.manager'
+      - '@file_url_generator'

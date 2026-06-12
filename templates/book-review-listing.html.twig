@@ -1,0 +1,15 @@
+<div class="book-review-listing">
+
+  {% if reviews is empty %}
+    <p>No reviews found.</p>
+  {% else %}
+
+    <div class="book-review-grid">
+      {% for review in reviews %}
+        {% include '@book_review/book-review-card.html.twig' %}
+      {% endfor %}
+    </div>
+
+  {% endif %}
+
+</div>

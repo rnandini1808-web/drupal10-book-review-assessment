@@ -1,0 +1,5 @@
+name: Book Review
+type: module
+description: Custom Book Review module
+core_version_requirement: ^10
+package: Custom

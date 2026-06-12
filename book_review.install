@@ -1,0 +1,260 @@
+<?php
+
+use Drupal\node\Entity\NodeType;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
+
+/**
+ * Implements hook_install().
+ */
+function book_review_install() {
+
+  $created = [];
+  $existing = [];
+
+  // ---------------------------------------------------------------------------
+  // CONTENT TYPE
+  // ---------------------------------------------------------------------------
+
+  if (!NodeType::load('book_review')) {
+
+    NodeType::create([
+      'type' => 'book_review',
+      'name' => 'Book Review',
+      'description' => 'Stores book reviews.',
+    ])->save();
+
+    $created[] = 'Book Review content type';
+  }
+  else {
+    $existing[] = 'Book Review content type';
+  }
+
+  // ---------------------------------------------------------------------------
+  // FIELD: AUTHOR NAME
+  // ---------------------------------------------------------------------------
+
+  if (!FieldStorageConfig::loadByName('node', 'field_author_name')) {
+
+    FieldStorageConfig::create([
+      'field_name' => 'field_author_name',
+      'entity_type' => 'node',
+      'type' => 'string',
+      'cardinality' => 1,
+    ])->save();
+
+    $created[] = 'Author Name field storage';
+  }
+
+  if (!FieldConfig::loadByName('node', 'book_review', 'field_author_name')) {
+
+    FieldConfig::create([
+      'field_name' => 'field_author_name',
+      'entity_type' => 'node',
+      'bundle' => 'book_review',
+      'label' => 'Author Name',
+      'required' => TRUE,
+    ])->save();
+
+    $created[] = 'Author Name field';
+  }
+
+  // ---------------------------------------------------------------------------
+  // FIELD: REVIEW BODY
+  // ---------------------------------------------------------------------------
+
+  if (!FieldStorageConfig::loadByName('node', 'field_review_body')) {
+
+    FieldStorageConfig::create([
+      'field_name' => 'field_review_body',
+      'entity_type' => 'node',
+      'type' => 'text_long',
+      'cardinality' => 1,
+    ])->save();
+
+    $created[] = 'Review Body field storage';
+  }
+
+  if (!FieldConfig::loadByName('node', 'book_review', 'field_review_body')) {
+
+    FieldConfig::create([
+      'field_name' => 'field_review_body',
+      'entity_type' => 'node',
+      'bundle' => 'book_review',
+      'label' => 'Review Body',
+      'required' => TRUE,
+    ])->save();
+
+    $created[] = 'Review Body field';
+  }
+
+  // ---------------------------------------------------------------------------
+  // FIELD: STAR RATING
+  // ---------------------------------------------------------------------------
+
+  if (!FieldStorageConfig::loadByName('node', 'field_star_rating')) {
+
+    FieldStorageConfig::create([
+      'field_name' => 'field_star_rating',
+      'entity_type' => 'node',
+      'type' => 'integer',
+      'cardinality' => 1,
+      'settings' => [
+        'unsigned' => TRUE,
+      ],
+    ])->save();
+
+    $created[] = 'Star Rating field storage';
+  }
+
+  if (!FieldConfig::loadByName('node', 'book_review', 'field_star_rating')) {
+
+    FieldConfig::create([
+      'field_name' => 'field_star_rating',
+      'entity_type' => 'node',
+      'bundle' => 'book_review',
+      'label' => 'Star Rating',
+      'required' => TRUE,
+    ])->save();
+
+    $created[] = 'Star Rating field';
+  }
+
+  // ---------------------------------------------------------------------------
+  // FIELD: BOOK COVER IMAGE
+  // ---------------------------------------------------------------------------
+
+  if (!FieldStorageConfig::loadByName('node', 'field_book_cover')) {
+
+    FieldStorageConfig::create([
+      'field_name' => 'field_book_cover',
+      'entity_type' => 'node',
+      'type' => 'image',
+      'cardinality' => 1,
+      'settings' => [
+        'target_type' => 'file',
+      ],
+    ])->save();
+
+    $created[] = 'Book Cover field storage';
+  }
+
+  if (!FieldConfig::loadByName('node', 'book_review', 'field_book_cover')) {
+
+    FieldConfig::create([
+      'field_name' => 'field_book_cover',
+      'entity_type' => 'node',
+      'bundle' => 'book_review',
+      'label' => 'Book Cover',
+      'required' => FALSE,
+      'settings' => [
+        'file_extensions' => 'png jpg jpeg webp',
+        'alt_field' => TRUE,
+        'alt_field_required' => TRUE,
+      ],
+    ])->save();
+
+    $created[] = 'Book Cover field';
+  }
+
+  // ---------------------------------------------------------------------------
+  // FORM DISPLAY CONFIGURATION
+  // ---------------------------------------------------------------------------
+
+  $form_display = EntityFormDisplay::load('node.book_review.default');
+
+  if (!$form_display) {
+    $form_display = EntityFormDisplay::create([
+      'targetEntityType' => 'node',
+      'bundle' => 'book_review',
+      'mode' => 'default',
+      'status' => TRUE,
+    ]);
+  }
+
+  $form_display->setComponent('field_book_cover', [
+    'type' => 'image_image',
+    'weight' => 0,
+    'settings' => [
+      'progress_indicator' => 'throbber',
+      'preview_image_style' => 'thumbnail',
+    ],
+  ]);
+
+  $form_display->setComponent('field_author_name', [
+    'type' => 'string_textfield',
+    'weight' => 2,
+  ]);
+
+  $form_display->setComponent('field_review_body', [
+    'type' => 'text_textarea',
+    'weight' => 3,
+  ]);
+
+  $form_display->setComponent('field_star_rating', [
+    'type' => 'number',
+    'weight' => 4,
+  ]);
+
+  $form_display->save();
+
+  // ---------------------------------------------------------------------------
+  // VIEW DISPLAY CONFIGURATION
+  // ---------------------------------------------------------------------------
+
+  $view_display = EntityViewDisplay::load('node.book_review.default');
+
+  if (!$view_display) {
+    $view_display = EntityViewDisplay::create([
+      'targetEntityType' => 'node',
+      'bundle' => 'book_review',
+      'mode' => 'default',
+      'status' => TRUE,
+    ]);
+  }
+
+  $view_display->setComponent('field_book_cover', [
+    'label' => 'hidden',
+    'type' => 'image',
+    'settings' => [
+      'image_style' => 'medium',
+      'image_link' => '',
+    ],
+  ]);
+
+  $view_display->setComponent('field_author_name', [
+    'label' => 'above',
+    'type' => 'string',
+  ]);
+
+  $view_display->setComponent('field_review_body', [
+    'label' => 'hidden',
+    'type' => 'text_default',
+  ]);
+
+  $view_display->setComponent('field_star_rating', [
+    'label' => 'above',
+    'type' => 'number_integer',
+  ]);
+
+  $view_display->save();
+
+  // ---------------------------------------------------------------------------
+  // MESSAGES
+  // ---------------------------------------------------------------------------
+
+  if (!empty($created)) {
+    \Drupal::messenger()->addStatus(
+      'Created: ' . implode(', ', $created)
+    );
+  }
+
+  if (!empty($existing)) {
+    \Drupal::messenger()->addWarning(
+      'Already existed: ' . implode(', ', $existing)
+    );
+  }
+
+}

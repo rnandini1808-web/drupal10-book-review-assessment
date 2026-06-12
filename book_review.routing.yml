@@ -1,0 +1,7 @@
+book_review.listing:
+  path: '/book-reviews'
+  defaults:
+    _controller: '\Drupal\book_review\Controller\BookReviewController::listing'
+    _title: 'Book Reviews'
+  requirements:
+    _permission: 'access content'
