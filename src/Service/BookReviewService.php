@@ -105,7 +105,7 @@ class BookReviewService {
   public function buildReviewData(NodeInterface $node): array {
 
     return [
-      'title' => $node->get('field_book_title')->value ?? '',
+      'title' => $node->getTitle(),
       'author' => $node->get('field_author_name')->value ?? '',
       'rating' => $node->get('field_star_rating')->value ?? '',
       'body' => $node->get('field_review_body')->value ?? '',
